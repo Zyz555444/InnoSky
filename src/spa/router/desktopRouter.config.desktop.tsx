@@ -1,0 +1,451 @@
+'use client';
+
+import type { RouteObject } from 'react-router-dom';
+
+import {
+  BusinessDesktopRoutesWithMainLayout,
+  BusinessDesktopRoutesWithoutMainLayout,
+} from '@/business/client/BusinessDesktopRoutes';
+import DesktopOnboarding from '@/routes/(desktop)/desktop-onboarding';
+// Layouts — sync import (Electron local, no network overhead)
+import DesktopMainLayout from '@/routes/(main)/_layout';
+import ImagePage from '@/routes/(main)/(create)/image';
+import DesktopImageLayout from '@/routes/(main)/(create)/image/_layout';
+import VideoPage from '@/routes/(main)/(create)/video';
+import DesktopVideoLayout from '@/routes/(main)/(create)/video/_layout';
+// Pages — sync import
+import AgentPage from '@/routes/(main)/agent';
+import DesktopChatLayout from '@/routes/(main)/agent/_layout';
+import DesktopAgentChatLayout from '@/routes/(main)/agent/(chat)/_layout';
+import AgentTopicNotebookRedirectPage from '@/routes/(main)/agent/[topicId]/page';
+import AgentTopicNotebookDocPage from '@/routes/(main)/agent/[topicId]/page/[docId]';
+import AgentChannelPage from '@/routes/(main)/agent/channel';
+import AgentCronDetailPage from '@/routes/(main)/agent/cron/[cronId]';
+import AgentPageRedirectPage from '@/routes/(main)/agent/page';
+import AgentProfilePage from '@/routes/(main)/agent/profile';
+import DevtoolsIndexPage from '@/routes/(main)/devtools';
+import DevtoolsLayout from '@/routes/(main)/devtools/_layout';
+import DevtoolsToolPage from '@/routes/(main)/devtools/[identifier]';
+import EvalOverviewPage from '@/routes/(main)/eval';
+import EvalLayout from '@/routes/(main)/eval/_layout';
+import EvalHomeLayout from '@/routes/(main)/eval/(home)/_layout';
+import EvalBenchmarkDetailPage from '@/routes/(main)/eval/bench/[benchmarkId]';
+import EvalBenchLayout from '@/routes/(main)/eval/bench/[benchmarkId]/_layout';
+import EvalDatasetDetailPage from '@/routes/(main)/eval/bench/[benchmarkId]/datasets/[datasetId]';
+import EvalRunDetailPage from '@/routes/(main)/eval/bench/[benchmarkId]/runs/[runId]';
+import EvalCaseDetailPage from '@/routes/(main)/eval/bench/[benchmarkId]/runs/[runId]/cases/[caseId]';
+import GroupPage from '@/routes/(main)/group';
+import DesktopGroupLayout from '@/routes/(main)/group/_layout';
+import GroupProfilePage from '@/routes/(main)/group/profile';
+import DesktopMemoryLayout from '@/routes/(main)/memory/_layout';
+import MemoryHomePage from '@/routes/(main)/memory/(home)';
+import MemoryActivitiesPage from '@/routes/(main)/memory/activities';
+import MemoryContextsPage from '@/routes/(main)/memory/contexts';
+import MemoryExperiencesPage from '@/routes/(main)/memory/experiences';
+import MemoryIdentitiesPage from '@/routes/(main)/memory/identities';
+import MemoryPreferencesPage from '@/routes/(main)/memory/preferences';
+import PageIndexPage from '@/routes/(main)/page';
+import DesktopPageLayout from '@/routes/(main)/page/_layout';
+import PageDetailPage from '@/routes/(main)/page/[id]';
+import ResourceLayout from '@/routes/(main)/resource/_layout';
+import ResourceHomePage from '@/routes/(main)/resource/(home)';
+import ResourceHomeLayout from '@/routes/(main)/resource/(home)/_layout';
+import ResourceLibraryPage from '@/routes/(main)/resource/library';
+import ResourceLibraryLayout from '@/routes/(main)/resource/library/_layout';
+import ResourceLibrarySlugPage from '@/routes/(main)/resource/library/[slug]';
+import SettingsTabPage from '@/routes/(main)/settings';
+import SettingsLayout from '@/routes/(main)/settings/_layout';
+import { ProviderDetailPage, ProviderLayout } from '@/routes/(main)/settings/provider';
+import TaskDetailLayout from '@/routes/(main)/task/_layout';
+import TaskDetailRoute from '@/routes/(main)/task/[taskId]';
+import AllTasksPage from '@/routes/(main)/tasks';
+import AllTasksLayout from '@/routes/(main)/tasks/_layout';
+import ShareTopicPage from '@/routes/share/t/[id]';
+import ShareTopicLayout from '@/routes/share/t/[id]/_layout';
+import { ErrorBoundary, redirectElement } from '@/utils/router';
+
+const isDev = process.env.NODE_ENV === 'development';
+
+// Desktop router configuration — all sync imports for Electron local build
+export const desktopRoutes: RouteObject[] = [
+  {
+    children: [
+      // Chat routes (agent)
+      {
+        children: [
+          {
+            element: redirectElement('/'),
+            index: true,
+          },
+          {
+            children: [
+              {
+                children: [
+                  {
+                    element: <AgentPage />,
+                    index: true,
+                  },
+                  {
+                    children: [
+                      {
+                        element: <AgentPage />,
+                        index: true,
+                      },
+                      {
+                        children: [
+                          {
+                            element: <AgentTopicNotebookRedirectPage />,
+                            index: true,
+                          },
+                          {
+                            element: <AgentTopicNotebookDocPage />,
+                            path: ':docId',
+                          },
+                        ],
+                        path: 'page',
+                      },
+                    ],
+                    path: ':topicId',
+                  },
+                ],
+                element: <DesktopAgentChatLayout />,
+              },
+              {
+                element: <AgentPageRedirectPage />,
+                path: 'page',
+              },
+              {
+                element: <AgentProfilePage />,
+                path: 'profile',
+              },
+              {
+                element: <AgentCronDetailPage />,
+                path: 'cron/:cronId',
+              },
+              {
+                element: <AgentChannelPage />,
+                path: 'channel',
+              },
+            ],
+            element: <DesktopChatLayout />,
+            errorElement: <ErrorBoundary />,
+            path: ':aid',
+          },
+        ],
+        path: 'agent',
+      },
+
+      // Group chat routes
+      {
+        children: [
+          {
+            element: redirectElement('/'),
+            index: true,
+          },
+          {
+            children: [
+              {
+                element: <GroupPage />,
+                index: true,
+              },
+              {
+                element: <GroupProfilePage />,
+                path: 'profile',
+              },
+            ],
+            element: <DesktopGroupLayout />,
+            errorElement: <ErrorBoundary />,
+            path: ':gid',
+          },
+        ],
+        path: 'group',
+      },
+
+      // Resource routes
+      {
+        children: [
+          // Home routes (resource list)
+          {
+            children: [
+              {
+                element: <ResourceHomePage />,
+                index: true,
+              },
+            ],
+            element: <ResourceHomeLayout />,
+          },
+          // Library routes (knowledge base detail)
+          {
+            children: [
+              {
+                element: <ResourceLibraryPage />,
+                index: true,
+              },
+              {
+                element: <ResourceLibrarySlugPage />,
+                path: ':slug',
+              },
+            ],
+            element: <ResourceLibraryLayout />,
+            path: 'library/:id',
+          },
+        ],
+        element: <ResourceLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'resource',
+      },
+
+      // Settings routes
+      {
+        children: [
+          {
+            element: redirectElement('/settings/profile'),
+            index: true,
+          },
+          // Provider routes with nested structure
+          {
+            children: [
+              {
+                element: redirectElement('/settings/provider/all'),
+                index: true,
+              },
+              {
+                element: <ProviderDetailPage />,
+                path: ':providerId',
+              },
+            ],
+            element: <ProviderLayout />,
+            path: 'provider',
+          },
+          // Other settings tabs
+          {
+            element: <SettingsTabPage />,
+            path: ':tab',
+          },
+        ],
+        element: <SettingsLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'settings',
+      },
+
+      // Memory routes
+      {
+        children: [
+          {
+            element: <MemoryHomePage />,
+            index: true,
+          },
+          {
+            element: <MemoryIdentitiesPage />,
+            path: 'identities',
+          },
+          {
+            element: <MemoryContextsPage />,
+            path: 'contexts',
+          },
+          {
+            element: <MemoryPreferencesPage />,
+            path: 'preferences',
+          },
+          {
+            element: <MemoryExperiencesPage />,
+            path: 'experiences',
+          },
+          {
+            element: <MemoryActivitiesPage />,
+            path: 'activities',
+          },
+        ],
+        element: <DesktopMemoryLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'memory',
+      },
+
+      // Video routes
+      {
+        children: [
+          {
+            element: <VideoPage />,
+            index: true,
+          },
+        ],
+        element: <DesktopVideoLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'video',
+      },
+
+      // Image routes
+      {
+        children: [
+          {
+            element: <ImagePage />,
+            index: true,
+          },
+        ],
+        element: <DesktopImageLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'image',
+      },
+
+      ...BusinessDesktopRoutesWithMainLayout,
+
+      // Eval routes
+      {
+        children: [
+          // Home (overview)
+          {
+            children: [
+              {
+                element: <EvalOverviewPage />,
+                index: true,
+              },
+            ],
+            element: <EvalHomeLayout />,
+          },
+          // Bench routes (with dedicated sidebar)
+          {
+            children: [
+              {
+                element: <EvalBenchmarkDetailPage />,
+                index: true,
+              },
+              {
+                children: [
+                  {
+                    element: <EvalRunDetailPage />,
+                    index: true,
+                  },
+                  {
+                    element: <EvalCaseDetailPage />,
+                    path: 'cases/:caseId',
+                  },
+                ],
+                path: 'runs/:runId',
+              },
+              {
+                element: <EvalDatasetDetailPage />,
+                path: 'datasets/:datasetId',
+              },
+            ],
+            element: <EvalBenchLayout />,
+            path: 'bench/:benchmarkId',
+          },
+        ],
+        element: <EvalLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'eval',
+      },
+
+      // Tasks routes (cross-agent)
+      {
+        children: [
+          {
+            element: <AllTasksPage />,
+            index: true,
+          },
+        ],
+        element: <AllTasksLayout />,
+        errorElement: <ErrorBoundary resetPath="/" />,
+        path: 'tasks',
+      },
+
+      // Task detail route (cross-agent entry — resolves by task identifier)
+      {
+        children: [
+          {
+            element: <TaskDetailRoute />,
+            path: ':taskId',
+          },
+        ],
+        element: <TaskDetailLayout />,
+        errorElement: <ErrorBoundary resetPath="/tasks" />,
+        path: 'task',
+      },
+
+      // Pages routes
+      {
+        children: [
+          {
+            element: <PageIndexPage />,
+            index: true,
+          },
+          {
+            element: <PageDetailPage />,
+            path: ':id',
+          },
+        ],
+        element: <DesktopPageLayout />,
+        errorElement: <ErrorBoundary />,
+        path: 'page',
+      },
+
+      // Default route - home page (handled by persistent layout)
+      {
+        index: true,
+      },
+      // Catch-all route
+      {
+        element: redirectElement('/'),
+        path: '*',
+      },
+    ],
+    element: <DesktopMainLayout />,
+    errorElement: <ErrorBoundary />,
+    path: '/',
+  },
+
+  ...BusinessDesktopRoutesWithoutMainLayout,
+
+  // Share topic route (outside main layout)
+  {
+    children: [
+      {
+        element: <ShareTopicPage />,
+        path: ':id',
+      },
+    ],
+    element: <ShareTopicLayout />,
+    path: '/share/t',
+  },
+
+  // Devtools route (outside main layout, dev-only)
+  ...(isDev
+    ? [
+        {
+          children: [
+            { element: <DevtoolsIndexPage />, index: true },
+            { element: <DevtoolsToolPage />, path: ':identifier' },
+          ],
+          element: <DevtoolsLayout />,
+          errorElement: <ErrorBoundary />,
+          path: '/devtools',
+        },
+      ]
+    : []),
+];
+
+// Desktop onboarding route (Electron only in .desktop.tsx)
+desktopRoutes.push({
+  element: <DesktopOnboarding />,
+  errorElement: <ErrorBoundary />,
+  path: '/desktop-onboarding',
+});
+
+// Web onboarding aliases redirect to the desktop-specific onboarding flow.
+desktopRoutes.push({
+  element: redirectElement('/desktop-onboarding'),
+  errorElement: <ErrorBoundary />,
+  path: '/onboarding',
+});
+
+desktopRoutes.push({
+  element: redirectElement('/desktop-onboarding'),
+  errorElement: <ErrorBoundary />,
+  path: '/onboarding/agent',
+});
+
+desktopRoutes.push({
+  element: redirectElement('/desktop-onboarding'),
+  errorElement: <ErrorBoundary />,
+  path: '/onboarding/classic',
+});

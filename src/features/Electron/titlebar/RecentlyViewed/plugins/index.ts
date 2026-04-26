@@ -1,0 +1,31 @@
+import { agentPlugin } from './agentPlugin';
+import { agentTopicPagePlugin } from './agentTopicPagePlugin';
+import { agentTopicPlugin } from './agentTopicPlugin';
+import { groupPlugin } from './groupPlugin';
+import { groupTopicPlugin } from './groupTopicPlugin';
+import { homePlugin } from './homePlugin';
+import { imagePlugin } from './imagePlugin';
+import { memoryPlugin } from './memoryPlugin';
+import { pagePlugin } from './pagePlugin';
+import { pluginRegistry } from './registry';
+import { resourcePlugin } from './resourcePlugin';
+import { settingsPlugin } from './settingsPlugin';
+
+export { pluginRegistry } from './registry';
+export * from './types';
+
+export const loadAllRecentlyViewedPlugins = () => {
+  pluginRegistry.register([
+    agentPlugin,
+    agentTopicPagePlugin,
+    agentTopicPlugin,
+    groupPlugin,
+    groupTopicPlugin,
+    homePlugin,
+    imagePlugin,
+    memoryPlugin,
+    pagePlugin,
+    resourcePlugin,
+  ]);
+  pluginRegistry.register([settingsPlugin]);
+};
